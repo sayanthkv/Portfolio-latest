@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Mail, Menu, X } from "lucide-react";
@@ -5,6 +7,16 @@ import { navLinks, profile } from "@/data/portfolio";
 
 export function Nav() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 40);
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -15,14 +27,31 @@ export function Nav() {
 
   return (
     <>
-      <header className="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-4 md:pt-6">
+      <motion.header
+        initial={{ opacity: 0, y: -16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        className="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-5 md:pt-7"
+      >
         <nav
           aria-label="Primary"
-          className="pointer-events-auto flex w-full max-w-3xl items-center justify-between gap-6 rounded-full border border-ink-foreground/10 bg-ink py-2 pl-5 pr-2 text-ink-foreground shadow-[0_8px_30px_-12px_color-mix(in_oklab,var(--ink)_60%,transparent)]"
+          className={`
+            pointer-events-auto relative flex w-full max-w-3xl items-center justify-between gap-6
+            rounded-full border py-2 pl-5 pr-2 text-ink-foreground transition-all duration-500
+            ${
+              scrolled
+                ? "border-white/15 bg-[#000000] shadow-[0_12px_32px_-8px_rgba(0,0,0,0.7)]"
+                : "border-white/15 bg-ink/70 backdrop-blur-xl shadow-[0_12px_36px_-10px_rgba(255,255,255,0.14),inset_0_1px_0_0_rgba(255,255,255,0.22)] hover:border-white/25 hover:shadow-[0_14px_40px_-8px_rgba(255,255,255,0.2),inset_0_1px_0_0_rgba(255,255,255,0.3)]"
+            }
+          `}
         >
-          <a href="#top" className="font-display text-sm font-semibold tracking-[0.12em]">
+          <a
+            href="#top"
+            className="font-display text-sm font-semibold tracking-[0.12em] transition-opacity hover:opacity-85"
+          >
             {profile.wordmark}
           </a>
+
           <ul className="hidden items-center gap-7 md:flex">
             {navLinks.map((l) => (
               <li key={l.href}>
@@ -36,6 +65,7 @@ export function Nav() {
               </li>
             ))}
           </ul>
+
           <div className="flex items-center gap-1">
             <a
               href={`mailto:${profile.email}`}
@@ -49,13 +79,13 @@ export function Nav() {
               aria-label="Open menu"
               aria-expanded={open}
               onClick={() => setOpen(true)}
-              className="grid size-9 place-items-center rounded-full text-ink-foreground md:hidden"
+              className="grid size-9 place-items-center rounded-full text-ink-foreground transition-colors hover:bg-ink-foreground/10 md:hidden"
             >
               <Menu className="size-5" strokeWidth={1.6} />
             </button>
           </div>
         </nav>
-      </header>
+      </motion.header>
 
       <AnimatePresence>
         {open && (
@@ -102,19 +132,19 @@ export function Nav() {
                 </motion.li>
               ))}
             </ul>
-            <div className="mt-auto space-y-3 text-sm text-muted-foreground pt-6 border-t">
+            <div className="mt-auto space-y-3 border-t pt-6 text-sm text-muted-foreground">
               <a
                 href={profile.resumePdf}
                 download="Sayanth_KV_Resume.pdf"
-                className="inline-flex items-center gap-2 rounded-full border px-4 py-2 label-caps text-[0.625rem] text-foreground"
+                className="label-caps inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[0.625rem] text-foreground"
               >
                 Download Resume (PDF)
               </a>
               <div>
-                <a href={`mailto:${profile.email}`} className="block text-foreground font-medium">
+                <a href={`mailto:${profile.email}`} className="block font-medium text-foreground">
                   {profile.email}
                 </a>
-                <p className="text-xs text-muted-foreground mt-0.5">Based in {profile.location}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">Based in {profile.location}</p>
               </div>
             </div>
           </motion.div>

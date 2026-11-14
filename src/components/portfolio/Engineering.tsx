@@ -1,12 +1,12 @@
-import { ArrowUpRight, Cpu } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import engineeringImage from "@/assets/engineering-system.jpg";
 import { architecturePractices } from "@/data/portfolio";
 import { ImageReveal, LineReveal, Reveal } from "./motion";
 
 export function Engineering() {
   return (
-    <section aria-labelledby="engineering-title" className="bg-ink text-ink-foreground">
-      <div className="mx-auto max-w-7xl px-5 py-24 md:px-10 md:py-36">
+    <section aria-labelledby="engineering-title" className="w-full bg-ink text-ink-foreground">
+      <div className="w-full px-6 py-24 sm:px-10 md:px-14 md:py-36 lg:px-20">
         <div className="grid gap-8 md:grid-cols-12">
           <Reveal className="md:col-span-3">
             <p className="label-caps flex items-center gap-2 text-ink-muted">
@@ -18,8 +18,8 @@ export function Engineering() {
             as="h2"
             className="font-display text-[2.3rem] font-normal leading-[1.02] tracking-[-0.03em] sm:text-5xl md:col-span-9 md:text-6xl lg:text-7xl"
             lines={[
-              <span id="engineering-title">Behind every interface,</span>,
-              <span className="serif-em text-[1.1em] text-ink-muted">there is a system.</span>,
+              <span id="engineering-title" key="title-1">Behind every interface,</span>,
+              <span className="serif-em text-[1.1em] text-ink-muted" key="title-2">there is a system.</span>,
             ]}
           />
         </div>
@@ -37,8 +37,8 @@ export function Engineering() {
                 className="aspect-[4/5] w-full object-cover transition-transform duration-[1.6s] ease-out hover:scale-[1.04]"
               />
             </ImageReveal>
-            <p className="mt-5 max-w-xs text-sm leading-relaxed text-ink-muted">
-              Engineering beyond basic UI: addressing data integrity, concurrency limits, 
+            <p className="mt-5 max-w-sm text-sm leading-relaxed text-ink-muted">
+              Engineering beyond basic UI: addressing data integrity, concurrency limits,
               security boundaries, and real-world system resilience.
             </p>
             <a
@@ -50,8 +50,8 @@ export function Engineering() {
             </a>
           </div>
 
-          {/* Architectural Practices & Methodologies (differentiated from tech skills) */}
-          <ol className="md:col-span-7 md:col-start-6 lg:col-span-7 lg:col-start-6 space-y-2">
+          {/* Architectural Practices & Methodologies */}
+          <ol className="space-y-2 md:col-span-7 lg:col-span-7 lg:col-start-6">
             {architecturePractices.map((practice, i) => (
               <Reveal
                 as="li"
@@ -63,16 +63,16 @@ export function Engineering() {
                   <span className="font-mono text-xs text-ink-muted">
                     [{practice.number}]
                   </span>
-                  <span className="label-caps text-[0.625rem] text-ink-muted tracking-wider">
+                  <span className="label-caps text-[0.625rem] tracking-wider text-ink-muted">
                     {practice.domain}
                   </span>
                 </div>
 
-                <h3 className="mt-2.5 font-display text-xl sm:text-2xl font-medium tracking-tight text-ink-foreground transition-all duration-300 group-hover:translate-x-1">
+                <h3 className="mt-2.5 font-display text-xl font-medium tracking-tight text-ink-foreground transition-all duration-300 group-hover:translate-x-1 sm:text-2xl">
                   {practice.title}
                 </h3>
 
-                <p className="mt-2 text-xs sm:text-sm leading-relaxed text-ink-muted">
+                <p className="mt-2 text-xs leading-relaxed text-ink-muted sm:text-sm">
                   {practice.summary}
                 </p>
 

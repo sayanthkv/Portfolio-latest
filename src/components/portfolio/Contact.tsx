@@ -6,18 +6,18 @@ export function Contact() {
   const year = new Date().getFullYear();
 
   return (
-    <footer id="contact" className="overflow-hidden bg-ink text-ink-foreground">
-      <div className="mx-auto max-w-7xl px-5 pt-24 md:px-10 md:pt-36">
+    <footer id="contact" className="w-full overflow-hidden bg-ink text-ink-foreground">
+      <div className="w-full px-6 pt-24 sm:px-10 md:px-14 md:pt-36 lg:px-20">
         <div className="grid gap-10 md:grid-cols-12">
           <LineReveal
             as="h2"
             className="font-display text-[2.6rem] font-normal leading-[0.98] tracking-[-0.035em] sm:text-6xl md:col-span-8 md:text-7xl lg:text-[5.5rem]"
-            lines={[<>Let's build</>, <span className="serif-em text-[1.1em]">something meaningful.</span>]}
+            lines={[<>Let&apos;s build</>, <span className="serif-em text-[1.1em]">something meaningful.</span>]}
           />
           <Reveal className="md:col-span-4 md:self-end" delay={0.15}>
-            <p className="leading-relaxed text-ink-muted text-sm sm:text-base">
+            <p className="text-sm leading-relaxed text-ink-muted sm:text-base">
               Seeking MERN Stack Developer opportunities, including junior developer positions and
-              internships. Let's discuss how I can contribute to your team.
+              internships. Let&apos;s discuss how I can contribute to your team.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <a
@@ -30,7 +30,7 @@ export function Contact() {
               <a
                 href={profile.resumePdf}
                 download="Sayanth_KV_Resume.pdf"
-                className="group inline-flex items-center gap-2 rounded-full border border-ink-border px-5 py-3 label-caps text-[0.625rem] text-ink-foreground transition-all duration-300 hover:bg-ink-foreground/10 hover:-translate-y-0.5"
+                className="group inline-flex items-center gap-2 rounded-full border border-ink-border px-5 py-3 label-caps text-[0.625rem] text-ink-foreground transition-all duration-300 hover:-translate-y-0.5 hover:bg-ink-foreground/10"
               >
                 Download Resume
                 <Download className="size-3.5" />
@@ -42,13 +42,13 @@ export function Contact() {
         <div className="mt-20 grid gap-10 border-t border-ink-border pt-10 sm:grid-cols-2 md:mt-28 md:grid-cols-4">
           <div>
             <p className="label-caps text-[0.6rem] text-ink-muted">Email</p>
-            <a href={`mailto:${profile.email}`} className="mt-3 block break-all text-sm hover:underline text-ink-foreground">
+            <a href={`mailto:${profile.email}`} className="mt-3 block break-all text-sm text-ink-foreground hover:underline">
               {profile.email}
             </a>
           </div>
           <div>
             <p className="label-caps text-[0.6rem] text-ink-muted">Phone / WhatsApp</p>
-            <a href={profile.phoneHref} className="mt-3 block text-sm hover:underline text-ink-foreground">
+            <a href={profile.phoneHref} className="mt-3 block text-sm text-ink-foreground hover:underline">
               {profile.phone}
             </a>
           </div>
@@ -92,11 +92,11 @@ export function Contact() {
             <p className="label-caps text-[0.6rem] text-ink-muted">Navigation</p>
             <ul className="mt-3 space-y-1.5 text-sm">
               <li>
-                <a href="#top" className="text-ink-muted hover:text-ink-foreground transition-colors">Home</a>
+                <a href="#top" className="text-ink-muted transition-colors hover:text-ink-foreground">Home</a>
               </li>
               {navLinks.map((l) => (
                 <li key={l.href}>
-                  <a href={l.href} className="text-ink-muted hover:text-ink-foreground transition-colors">
+                  <a href={l.href} className="text-ink-muted transition-colors hover:text-ink-foreground">
                     {l.label}
                   </a>
                 </li>
