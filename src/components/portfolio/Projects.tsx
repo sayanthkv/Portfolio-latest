@@ -1,121 +1,376 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, CheckCircle2, ChevronDown, Layers, Server, ShieldAlert } from "lucide-react";
-import { projects, type Project } from "@/data/portfolio";
+import {
+  ArrowUpRight,
+  CheckCircle2,
+  FolderGit2,
+  Github,
+  Plus,
+} from "lucide-react";
+import { archiveProjects, profile, projects, type Project } from "@/data/portfolio";
 import { cn } from "@/lib/utils";
 import { LineReveal, Reveal, SectionLabel } from "./motion";
 import { FlagshipVisual, EditorialProjectVisual } from "./ProjectVisual";
 
 export function Projects() {
-  const flagship = projects[0]!;
-  const rest = projects.slice(1);
+  const [showAllProjects, setShowAllProjects] = useState(false);
 
   return (
-    <section id="projects" className="relative overflow-hidden pb-24 pt-10 md:pb-36">
-      <div className="relative mx-auto max-w-7xl px-5 md:px-10">
-        <div className="flex flex-col items-center text-center">
-          <Reveal>
+    <section id="projects" className="relative w-full overflow-hidden py-24 md:py-36">
+      <div className="w-full px-6 sm:px-10 md:px-14 lg:px-20">
+        {/* Editorial Section Header */}
+        <div className="grid gap-8 border-b border-foreground/15 pb-14 md:grid-cols-12 md:pb-20">
+          <Reveal className="md:col-span-3 md:pt-3">
             <SectionLabel>Selected work</SectionLabel>
           </Reveal>
-          <LineReveal
-            className="mt-6 font-display text-[2.1rem] font-normal leading-[1.02] tracking-[-0.03em] sm:text-5xl md:text-6xl"
-            lines={[
-              <>From real-world workflows</>,
-              <>
-                — <span className="serif-em text-[1.12em]">to reliable digital systems.</span>
-              </>,
-            ]}
-          />
-          <Reveal delay={0.15}>
-            <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-              Full-stack MERN applications built with practical architectures, authentication,
-              database integrity, and distinct user portals.
-            </p>
-          </Reveal>
+
+          <div className="md:col-span-9">
+            <LineReveal
+              as="h2"
+              className="font-display text-[2.2rem] font-normal leading-[1.03] tracking-[-0.03em] sm:text-5xl md:text-6xl lg:text-[4.2rem]"
+              lines={[
+                <>From real-world workflows</>,
+                <>
+                  to <span className="serif-em text-[1.1em]">reliable digital systems.</span>
+                </>,
+              ]}
+            />
+            <Reveal delay={0.15}>
+              <p className="mt-5 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+                Full-stack MERN applications engineered around role-based access control, atomic
+                database integrity, and clean production interfaces.
+              </p>
+            </Reveal>
+          </div>
         </div>
 
-        {/* Flagship Project 01: Parkora */}
-        <div className="mt-16 md:mt-24">
-          <ProjectFeature project={flagship} variant="flagship" />
-        </div>
-
-        {/* Project 02: HireZone & Project 03: Fragranzia */}
-        <div className="mt-24 space-y-28 md:mt-36 md:space-y-36">
-          {rest.map((p, i) => (
-            <ProjectFeature key={p.id} project={p} variant={i % 2 === 0 ? "left" : "right"} />
+        {/* Featured Projects List (Zero Empty White Space) */}
+        <div className="divide-y divide-foreground/15">
+          {projects.map((project, index) => (
+            <BalancedProjectEntry
+              key={project.id}
+              project={project}
+              reversed={index % 2 === 1}
+            />
           ))}
+        </div>
+
+        {/* Expandable Project Archive Section */}
+        <div className="border-t border-foreground/15 pt-14 md:pt-20">
+          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+            <div>
+              <span className="label-caps text-[0.625rem] tracking-[0.2em] text-muted-foreground">
+                Archive Index ({projects.length + archiveProjects.length} Total Builds)
+              </span>
+              <h3 className="mt-2 font-display text-2xl font-medium tracking-tight text-foreground sm:text-3xl">
+                Additional full-stack systems &amp;{" "}
+                <span className="serif-em font-normal">collaborative builds.</span>
+              </h3>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                aria-expanded={showAllProjects}
+                aria-controls="more-projects-archive"
+                onClick={() => setShowAllProjects((prev) => !prev)}
+                className="label-caps inline-flex items-center gap-2.5 rounded-full bg-foreground px-6 py-3 text-[0.625rem] font-medium tracking-[0.14em] text-background transition-transform duration-300 hover:-translate-y-0.5"
+              >
+                <Plus
+                  className={cn(
+                    "size-3.5 transition-transform duration-300",
+                    showAllProjects && "rotate-45",
+                  )}
+                />
+                {showAllProjects
+                  ? "Collapse Archive"
+                  : `View All Projects (+${archiveProjects.length})`}
+              </button>
+
+              <a
+                href={`${profile.github}?tab=repositories`}
+                target="_blank"
+                rel="noreferrer"
+                className="label-caps group inline-flex items-center gap-2 rounded-full border border-foreground/20 bg-background px-5 py-3 text-[0.625rem] font-medium tracking-[0.14em] text-foreground transition-colors duration-300 hover:bg-secondary"
+              >
+                <FolderGit2 className="size-3.5" />
+                GitHub Repositories
+                <ArrowUpRight className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </a>
+            </div>
+          </div>
+
+          <AnimatePresence initial={false}>
+            {showAllProjects && (
+              <motion.div
+                id="more-projects-archive"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="overflow-hidden"
+              >
+                <ol className="mt-10 divide-y divide-foreground/12 border-y border-foreground/12">
+                  {archiveProjects.map((item) => (
+                    <li
+                      key={item.id}
+                      className="group grid items-center gap-4 py-6 transition-colors hover:bg-secondary/40 sm:px-3 md:grid-cols-12"
+                    >
+                      <div className="flex items-baseline gap-4 md:col-span-4">
+                        <span className="font-mono text-xs text-muted-foreground">
+                          [{item.number}]
+                        </span>
+                        <div>
+                          <h4 className="font-display text-xl font-medium tracking-tight text-foreground">
+                            {item.title}
+                          </h4>
+                          <span className="label-caps text-[0.58rem] text-muted-foreground">
+                            {item.category}
+                          </span>
+                        </div>
+                      </div>
+
+                      <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm md:col-span-5">
+                        {item.summary}
+                        <span className="mt-2 flex flex-wrap gap-1.5">
+                          {item.technologies.map((tech) => (
+                            <span
+                              key={tech}
+                              className="rounded-full border border-foreground/12 px-2 py-0.5 font-mono text-[0.625rem] text-foreground/75"
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                        </span>
+                      </p>
+
+                      <div className="flex flex-wrap items-center gap-2 md:col-span-3 md:justify-end">
+                        {item.liveUrl && (
+                          <a
+                            href={item.liveUrl}
+                            target={item.liveUrl.startsWith("http") ? "_blank" : undefined}
+                            rel="noreferrer"
+                            className="label-caps group/btn inline-flex items-center gap-1.5 rounded-full bg-foreground px-3.5 py-2 text-[0.6rem] text-background transition-transform duration-300 hover:-translate-y-0.5"
+                          >
+                            Live Demo
+                            <ArrowUpRight className="size-3 transition-transform duration-300 group-hover/btn:rotate-45" />
+                          </a>
+                        )}
+                        <a
+                          href={item.githubUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="label-caps group/btn inline-flex items-center gap-1.5 rounded-full border border-foreground/20 bg-background px-3.5 py-2 text-[0.6rem] text-foreground transition-colors hover:bg-secondary"
+                        >
+                          <Github className="size-3" />
+                          GitHub
+                          <ArrowUpRight className="size-3 transition-transform duration-300 group-hover/btn:rotate-45" />
+                        </a>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </section>
   );
 }
 
-function ProjectFeature({
+type DetailTab = "overview" | "architecture" | "portals";
+
+function BalancedProjectEntry({
   project,
-  variant,
+  reversed = false,
 }: {
   project: Project;
-  variant: "flagship" | "left" | "right";
+  reversed?: boolean;
 }) {
-  if (variant === "flagship") {
-    return (
-      <article aria-labelledby={`${project.id}-title`} className="rounded-[24px] border border-border/80 bg-card/40 p-4 sm:p-8 md:p-12">
-        <div className="grid items-end gap-6 md:grid-cols-12">
-          <Reveal className="md:col-span-7">
-            <div className="flex items-center gap-3">
-              <span className="font-display text-sm font-medium text-muted-foreground">({project.number})</span>
-              <span className="label-caps rounded-full border border-foreground/20 bg-foreground/5 px-3 py-1 text-[0.625rem] text-foreground">
-                Flagship Project · MERN
-              </span>
-            </div>
+  const [activeTab, setActiveTab] = useState<DetailTab>("overview");
+
+  const tabs: { id: DetailTab; label: string }[] = [
+    { id: "overview", label: "Overview" },
+    { id: "architecture", label: "Architecture" },
+    ...(project.portals ? [{ id: "portals" as const, label: "Portals (3)" }] : []),
+  ];
+
+  return (
+    <article aria-labelledby={`${project.id}-title`} className="py-16 md:py-24">
+      {/* Full-Width Project Header Row */}
+      <Reveal className="flex flex-col justify-between gap-6 pb-8 md:flex-row md:items-end md:pb-10">
+        <div>
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-xs text-muted-foreground">[{project.number}]</span>
+            <span className="label-caps rounded-full border border-foreground/15 px-3 py-0.5 text-[0.6rem] tracking-[0.16em] text-muted-foreground">
+              {project.flagship ? "Flagship Build · MERN" : project.category}
+            </span>
+          </div>
+
+          <div className="mt-3 flex flex-wrap items-baseline gap-x-4 gap-y-1">
             <h3
               id={`${project.id}-title`}
-              className="mt-4 font-display text-[14vw] sm:text-7xl md:text-8xl font-semibold uppercase leading-[0.85] tracking-[-0.04em]"
+              className="font-display text-4xl font-semibold tracking-[-0.035em] text-foreground sm:text-5xl md:text-6xl"
             >
               {project.title}
             </h3>
-          </Reveal>
-          <Reveal className="md:col-span-5 md:pb-2" delay={0.1}>
-            <p className="serif-em text-2xl leading-snug text-muted-foreground sm:text-3xl md:text-4xl">
-              {project.subtitle}
+            <p className="serif-em text-2xl text-muted-foreground sm:text-3xl">
+              — {project.subtitle}
             </p>
-          </Reveal>
+          </div>
         </div>
 
-        {/* Optimized flagship project visual */}
-        <Reveal className="mt-8 md:mt-12">
-          <FlagshipVisual project={project} />
+        {/* Action Buttons aligned right in header */}
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+          {project.links.map((l) => {
+            const isPrimary = l.label.trim().toLowerCase() === "live demo";
+            const isGithub = l.label.trim().toLowerCase().includes("github");
+
+            return (
+              <a
+                key={l.label}
+                href={l.href}
+                target="_blank"
+                rel="noreferrer"
+                className={cn(
+                  "group inline-flex items-center gap-2 rounded-full px-5 py-2.5 label-caps text-[0.625rem] transition-all duration-300 hover:-translate-y-0.5",
+                  isPrimary
+                    ? "bg-foreground text-background"
+                    : "border border-foreground/20 bg-background text-foreground hover:bg-secondary",
+                )}
+              >
+                {isGithub && <Github className="size-3.5" />}
+                {l.label.trim()}
+                <ArrowUpRight className="size-3.5 transition-transform duration-300 group-hover:rotate-45" />
+              </a>
+            );
+          })}
+        </div>
+      </Reveal>
+
+      {/* Balanced 12-Column Split: Browser Preview + Interactive Details Side-by-Side */}
+      <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-12">
+        {/* Browser Visual Column (7 cols) */}
+        <Reveal
+          className={cn(
+            "lg:col-span-7",
+            reversed ? "lg:order-2" : "lg:order-1",
+          )}
+        >
+          {project.flagship ? (
+            <FlagshipVisual project={project} />
+          ) : (
+            <EditorialProjectVisual project={project} />
+          )}
         </Reveal>
 
-        {/* Content & Details */}
-        <div className="mt-8 grid gap-8 md:grid-cols-12 md:gap-12">
-          <Reveal className="md:col-span-6 space-y-5">
-            <p className="text-base leading-relaxed text-foreground md:text-lg">
-              {project.overview}
-            </p>
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              {project.description}
-            </p>
-            
-            <TechList items={project.technologies} className="pt-2" />
-            
-            <ProjectActionLinks project={project} className="pt-4" />
-          </Reveal>
+        {/* Details, Tabs & Tech Stack Column (5 cols) */}
+        <Reveal
+          delay={0.1}
+          className={cn(
+            "flex flex-col justify-between lg:col-span-5",
+            reversed ? "lg:order-1" : "lg:order-2",
+          )}
+        >
+          {/* Tab Switcher */}
+          <div className="border-b border-foreground/12">
+            <div className="flex gap-6" role="tablist" aria-label={`${project.title} details`}>
+              {tabs.map((tab) => {
+                const active = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={cn(
+                      "relative pb-3 label-caps text-[0.65rem] tracking-[0.16em] transition-colors",
+                      active
+                        ? "font-semibold text-foreground"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {tab.label}
+                    {active && (
+                      <motion.span
+                        layoutId={`tab-line-${project.id}`}
+                        className="absolute inset-x-0 bottom-0 h-[1.5px] bg-foreground"
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-          <Reveal className="md:col-span-6 md:col-start-7" delay={0.1}>
-            <p className="label-caps text-muted-foreground">Key Portals & Capabilities</p>
-            {project.portals ? (
-              <div className="mt-4 space-y-4">
+          {/* Active Tab Content */}
+          <div className="pt-5">
+            {activeTab === "overview" && (
+              <div className="space-y-4">
+                <p className="text-sm font-medium leading-relaxed text-foreground sm:text-base">
+                  {project.overview}
+                </p>
+                <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">
+                  {project.description}
+                </p>
+
+                <div className="pt-2">
+                  <span className="label-caps block text-[0.58rem] tracking-[0.18em] text-muted-foreground">
+                    Key Capabilities
+                  </span>
+                  <ul className="mt-2.5 space-y-2 border-t border-foreground/10 pt-3">
+                    {project.features.slice(0, 5).map((feat) => (
+                      <li
+                        key={feat}
+                        className="flex items-start gap-2 text-xs leading-relaxed text-foreground/85"
+                      >
+                        <span className="mt-1.5 size-1 shrink-0 rounded-full bg-foreground" />
+                        <span>{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "architecture" && (
+              <div className="space-y-3">
+                {project.engineeringHighlights.map((highlight, idx) => {
+                  const [title, ...restParts] = highlight.split(":");
+                  return (
+                    <div
+                      key={idx}
+                      className="rounded-xl border border-foreground/10 bg-secondary/40 p-3.5"
+                    >
+                      <p className="flex items-center gap-2 font-display text-xs font-semibold text-foreground sm:text-sm">
+                        <CheckCircle2 className="size-3.5 shrink-0 text-emerald-600" />
+                        {title}
+                      </p>
+                      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                        {restParts.join(":") || highlight}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {activeTab === "portals" && project.portals && (
+              <div className="space-y-3">
                 {project.portals.map((portal) => (
-                  <div key={portal.name} className="rounded-xl border border-border/80 bg-background/60 p-4">
-                    <h4 className="font-display text-sm font-semibold tracking-tight text-foreground flex items-center gap-2">
-                      <span className="size-1.5 rounded-full bg-foreground" />
+                  <div
+                    key={portal.name}
+                    className="rounded-xl border border-foreground/10 bg-secondary/40 p-3.5"
+                  >
+                    <h4 className="font-display text-xs font-semibold text-foreground sm:text-sm">
                       {portal.name}
                     </h4>
-                    <ul className="mt-2.5 space-y-1.5 text-xs text-muted-foreground">
-                      {portal.features.slice(0, 3).map((f) => (
+                    <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+                      {portal.features.slice(0, 4).map((f) => (
                         <li key={f} className="flex items-start gap-2">
-                          <span className="text-foreground/40 shrink-0">·</span>
+                          <span className="text-foreground/40">·</span>
                           <span>{f}</span>
                         </li>
                       ))}
@@ -123,193 +378,27 @@ function ProjectFeature({
                   </div>
                 ))}
               </div>
-            ) : (
-              <ol className="mt-4 divide-y border-y">
-                {project.features.map((f, i) => (
-                  <li key={f} className="group flex items-baseline gap-4 py-3">
-                    <span className="w-8 shrink-0 font-display text-[0.65rem] text-muted-foreground">
-                      [{String(i + 1).padStart(2, "0")}]
-                    </span>
-                    <span className="font-display text-sm tracking-tight text-foreground/90 md:text-base">
-                      {f}
-                    </span>
-                  </li>
-                ))}
-              </ol>
             )}
-          </Reveal>
-        </div>
+          </div>
 
-        {/* Case Study Deep Dive Accordion */}
-        <CaseStudySection project={project} />
-      </article>
-    );
-  }
-
-  const imageFirst = variant === "left";
-  return (
-    <article aria-labelledby={`${project.id}-title`} className="grid items-center gap-10 md:grid-cols-12 md:gap-10">
-      <Reveal
-        className={cn(
-          "md:col-span-6",
-          imageFirst ? "md:order-1" : "md:order-2 md:col-start-7",
-        )}
-      >
-        <EditorialProjectVisual project={project} />
-      </Reveal>
-
-      <Reveal
-        delay={0.1}
-        className={cn(
-          "relative md:col-span-6",
-          imageFirst ? "md:order-2 md:pl-4" : "md:order-1 md:col-start-1 md:pr-4",
-        )}
-      >
-        <div className="flex items-center gap-2.5">
-          <span className="font-display text-sm text-muted-foreground">({project.number})</span>
-          <span className="label-caps rounded-full border border-border px-2.5 py-0.5 text-[0.6rem] text-muted-foreground">
-            {project.category}
-          </span>
-        </div>
-        <h3
-          id={`${project.id}-title`}
-          className="mt-3 font-display text-4xl font-semibold uppercase leading-[0.9] tracking-[-0.04em] sm:text-5xl md:text-6xl"
-        >
-          {project.title}
-        </h3>
-        <p className="serif-em mt-2 text-2xl text-muted-foreground sm:text-3xl">{project.subtitle}</p>
-        
-        <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
-          {project.overview}
-        </p>
-        <p className="mt-2 text-xs leading-relaxed text-muted-foreground/90">
-          {project.description}
-        </p>
-
-        <TechList items={project.technologies} className="mt-5" />
-
-        <ProjectActionLinks project={project} className="mt-6" />
-
-        {/* Expandable Case Study for secondary projects */}
-        <CaseStudySection project={project} compact />
-      </Reveal>
-    </article>
-  );
-}
-
-function TechList({ items, className }: { items: string[]; className?: string }) {
-  return (
-    <ul className={cn("flex flex-wrap gap-1.5", className)} aria-label="Technologies">
-      {items.map((t) => (
-        <li
-          key={t}
-          className="rounded-full border border-border bg-background/80 px-2.5 py-1 text-[0.7rem] text-foreground/80 font-medium font-mono"
-        >
-          {t}
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function ProjectActionLinks({ project, className }: { project: Project; className?: string }) {
-  return (
-    <div className={className}>
-      <div className="flex flex-wrap items-center gap-2">
-        {project.links.map((l, i) => (
-          <a
-            key={l.label}
-            href={l.href}
-            target="_blank"
-            rel="noreferrer"
-            className={cn(
-              "group inline-flex items-center gap-2 rounded-full px-4 py-2 label-caps text-[0.625rem] transition-all duration-300 hover:-translate-y-0.5",
-              i === 0 && project.flagship
-                ? "bg-foreground text-background"
-                : "border border-border bg-background hover:bg-secondary text-foreground",
-            )}
-          >
-            {l.label}
-            <ArrowUpRight className="size-3.5 transition-transform duration-300 group-hover:rotate-45" />
-          </a>
-        ))}
+          {/* Tech Stack Footer inside Right Column */}
+          <div className="mt-6 border-t border-foreground/10 pt-4">
+            <span className="label-caps block text-[0.58rem] tracking-[0.18em] text-muted-foreground">
+              Stack
+            </span>
+            <ul className="mt-2.5 flex flex-wrap gap-1.5" aria-label="Technologies">
+              {project.technologies.map((t) => (
+                <li
+                  key={t}
+                  className="rounded-full border border-foreground/12 bg-secondary/50 px-2.5 py-0.5 font-mono text-[0.65rem] text-foreground/85"
+                >
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Reveal>
       </div>
-      {project.deploymentNote && (
-        <p className="mt-3 text-[0.7rem] text-muted-foreground italic">
-          {project.deploymentNote}
-        </p>
-      )}
-    </div>
-  );
-}
-
-function CaseStudySection({ project, compact = false }: { project: Project; compact?: boolean }) {
-  const [open, setOpen] = useState(false);
-  const panelId = `${project.id}-case-panel`;
-
-  return (
-    <div className={compact ? "mt-5 border-t border-border/60 pt-4" : "mt-10 border-t border-border pt-6"}>
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-controls={panelId}
-        onClick={() => setOpen((o) => !o)}
-        className="group flex w-full items-center justify-between py-2 text-left transition-colors"
-      >
-        <span className="label-caps text-[0.6875rem] text-foreground font-semibold flex items-center gap-2">
-          <Layers className="size-3.5 text-muted-foreground" />
-          Engineering Case Study & Architecture
-        </span>
-        <span className="flex items-center gap-1.5 label-caps text-[0.625rem] text-muted-foreground group-hover:text-foreground">
-          {open ? "Hide Analysis" : "Read Breakdown"}
-          <ChevronDown className={cn("size-3.5 transition-transform duration-300", open && "rotate-180")} />
-        </span>
-      </button>
-
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            id={panelId}
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden"
-          >
-            <div className="pt-4 pb-2 space-y-4 text-sm">
-              <div className="rounded-xl border border-border/80 bg-background/80 p-4 space-y-3">
-                <p className="label-caps text-[0.6rem] text-muted-foreground">
-                  Core Engineering Solutions & Problem Solving
-                </p>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {project.engineeringHighlights.map((highlight, idx) => (
-                    <div key={idx} className="space-y-1">
-                      <p className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                        <CheckCircle2 className="size-3 text-emerald-600 shrink-0" />
-                        {highlight.split(":")[0]}
-                      </p>
-                      <p className="text-xs text-muted-foreground leading-relaxed pl-4.5">
-                        {highlight.split(":")[1] || highlight}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {project.portals && (
-                <div className="rounded-xl border border-border/80 bg-muted/30 p-4 space-y-2">
-                  <p className="label-caps text-[0.6rem] text-muted-foreground">
-                    Role-Based Separation of Concerns
-                  </p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Designed to prevent workflow bottlenecks by isolating customer reservations from gate staff verification pipelines and high-level administrative occupancy reporting.
-                  </p>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+    </article>
   );
 }

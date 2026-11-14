@@ -78,8 +78,8 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-ink/90 via-ink/35 to-ink/35" />
       <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-r from-ink/70 via-transparent to-transparent" />
 
-      {/* Foreground Content */}
-      <div className="pointer-events-none relative z-20 mx-auto flex w-full max-w-[1440px] flex-1 flex-col justify-between px-6 pb-8 pt-28 sm:px-10 sm:pb-12 md:px-14 md:pt-32">
+      {/* Foreground Content (Full Width) */}
+      <div className="pointer-events-none relative z-20 flex w-full flex-1 flex-col justify-between px-6 pb-8 pt-28 sm:px-10 sm:pb-12 md:px-14 md:pt-32 lg:px-20">
         {/* Top Metadata Row */}
         <motion.div
           initial={reduce ? false : { opacity: 0, y: -10 }}
@@ -90,21 +90,32 @@ export function Hero() {
           <span className="label-caps text-[0.625rem] tracking-[0.16em]">
             Based in {profile.location}
           </span>
-          <span className="label-caps text-[0.625rem] tracking-[0.16em]">
-            Full-Stack MERN Development
+          <span className="label-caps inline-flex items-center gap-2 text-[0.625rem] tracking-[0.16em] text-on-image/85">
+            <span className="relative flex size-1.5">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400/75" />
+              <span className="relative inline-flex size-1.5 rounded-full bg-emerald-400" />
+            </span>
+            Open to Opportunities
           </span>
         </motion.div>
 
-        {/* Centered Bold Name & Role */}
+        {/* Centered Greeting, Bold Name & Role */}
         <motion.div
           variants={identityVariants}
           initial={reduce ? "visible" : "hidden"}
           animate="visible"
           className="pointer-events-auto mx-auto my-auto flex flex-col items-center py-8 text-center"
         >
+          <motion.span
+            variants={fadeUpVariants}
+            className="serif-em text-xl text-on-image/75 sm:text-2xl md:text-[1.75rem]"
+          >
+            Hi, I&apos;m
+          </motion.span>
+
           <motion.h2
             variants={fadeUpVariants}
-            className="font-display text-5xl font-bold tracking-[-0.035em] text-on-image sm:text-7xl md:text-[5.25rem] md:leading-none"
+            className="mt-1.5 font-display text-5xl font-bold tracking-[-0.035em] text-on-image sm:text-7xl md:text-[5.25rem] md:leading-none"
           >
             {profile.name}
           </motion.h2>

@@ -40,6 +40,8 @@ export type Project = {
   type: string;
   overview: string;
   description: string;
+  image: string;
+  mobileImage?: string;
   technologies: string[];
   portals?: { name: string; features: string[] }[];
   features: string[];
@@ -47,6 +49,18 @@ export type Project = {
   links: ProjectLink[];
   flagship?: boolean;
   deploymentNote?: string;
+};
+
+export type ArchiveProject = {
+  id: string;
+  number: string;
+  title: string;
+  category: string;
+  year: string;
+  summary: string;
+  technologies: string[];
+  liveUrl?: string;
+  githubUrl: string;
 };
 
 export const projects: Project[] = [
@@ -61,6 +75,8 @@ export const projects: Project[] = [
       "Parkora is a smart urban parking management platform modeled around Kannur, Kerala. The platform helps drivers discover parking facilities, check parking availability, view pricing and reserve parking slots for selected time intervals.",
     description:
       "A complete smart parking solution designed around three dedicated user experiences: Customer Portal, Staff Portal, and Admin Dashboard. Implements MongoDB atomic transactions to prevent double bookings during concurrent reservation requests, alongside QR ticket verification and JWT-based role access control.",
+    image: "/projects/parkora-desktop.png",
+    mobileImage: "/projects/parkora-mobile.png",
     technologies: [
       "React 18",
       "Vite",
@@ -123,8 +139,8 @@ export const projects: Project[] = [
     ],
     links: [
       { label: "Live Demo", href: "https://parkora-kannur.vercel.app/", isExternal: true },
-      { label: "Backend API", href: "https://parkora-61zo.onrender.com/", isExternal: true },
-      { label: "GitHub Profile", href: "https://github.com/sayanthkv", isExternal: true },
+      { label: "GitHub", href: "https://github.com/sayanthkv/Parkora", isExternal: true },
+      { label: "Backend API", href: "https://parkora-61zo.onrender.com/api/health", isExternal: true },
     ],
     flagship: true,
   },
@@ -139,6 +155,7 @@ export const projects: Project[] = [
       "HireZone is a full-stack job portal connecting students and recruiters. It provides separate experiences for students and recruiters with authentication, job management and application workflows.",
     description:
       "Engineered with custom authentication middleware and role-based route protection. Students can search, filter, and apply for roles with enforced application uniqueness, while recruiters manage listings and review candidate submissions.",
+    image: "/projects/hirezone.png",
     technologies: [
       "React",
       "Node.js",
@@ -165,9 +182,9 @@ export const projects: Project[] = [
       "Server-Side Validation: Validates incoming payloads to ensure consistent job post and profile schemas.",
     ],
     links: [
-      { label: "GitHub Profile", href: "https://github.com/sayanthkv", isExternal: true },
+      { label: "Live Demo", href: "https://hire-zone-eight.vercel.app/", isExternal: true },
+      { label: "GitHub", href: "https://github.com/sayanthkv/HireZone", isExternal: true },
     ],
-    deploymentNote: "Deployed on Vercel (Frontend) & Render (Backend). Repository link available on request.",
   },
   {
     id: "fragranzia",
@@ -180,6 +197,7 @@ export const projects: Project[] = [
       "Fragranzia is a perfume shopping platform built to provide a modern, seamless product browsing and e-commerce shopping experience.",
     description:
       "Built with a responsive React frontend and REST API integration. Features comprehensive product catalogs, category filtering, persistent shopping cart, wishlist functionality, user authentication, and address management.",
+    image: "/projects/fragranzia.png",
     technologies: [
       "React",
       "JavaScript",
@@ -202,9 +220,47 @@ export const projects: Project[] = [
       "Responsive Catalog Design: Clean editorial product showcase optimized across desktop and mobile devices.",
     ],
     links: [
-      { label: "GitHub Profile", href: "https://github.com/sayanthkv", isExternal: true },
+      { label: "Live Demo", href: "https://fragranzia.vercel.app/", isExternal: true },
+      { label: "GitHub", href: "https://github.com/sayanthkv/Fragranzia-react", isExternal: true },
     ],
-    deploymentNote: "Deployed on cloud hosting. Repository and live preview available on request.",
+  },
+];
+
+// Additional projects revealed when clicking "View All Projects"
+export const archiveProjects: ArchiveProject[] = [
+  {
+    id: "lms-portal",
+    number: "04",
+    title: "Softroniics LMS Portal",
+    category: "Collaborative Full-Stack System",
+    year: "2026",
+    summary:
+      "Built the syllabus management and batch schedule management modules as part of a four-developer engineering team for Softroniics.",
+    technologies: ["React", "Node.js", "Express.js", "MongoDB", "REST APIs"],
+    githubUrl: "https://github.com/sayanthkv",
+  },
+  {
+    id: "candidate-management",
+    number: "05",
+    title: "Candidate Management System",
+    category: "MERN Workflow Application",
+    year: "2026",
+    summary:
+      "Full-stack applicant tracking and candidate pipeline dashboard with structured status transitions, role filtering, and JWT-secured endpoints.",
+    technologies: ["React", "Express.js", "MongoDB", "JWT", "Tailwind CSS"],
+    githubUrl: "https://github.com/sayanthkv",
+  },
+  {
+    id: "portfolio-v2",
+    number: "06",
+    title: "Interactive WebGL Portfolio",
+    category: "Frontend & Graphics Engineering",
+    year: "2026",
+    summary:
+      "Editorial developer portfolio built with React, TypeScript, Framer Motion, and a custom WebGL2 GLSL shader light-tunnel background.",
+    technologies: ["React", "TypeScript", "WebGL2", "Tailwind CSS", "Framer Motion"],
+    liveUrl: "#top",
+    githubUrl: "https://github.com/sayanthkv",
   },
 ];
 
