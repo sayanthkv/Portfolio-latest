@@ -166,6 +166,7 @@ const compile = (gl: WebGL2RenderingContext, type: number, source: string): WebG
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
   if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
+  console.error('LightTunnel shader compile error:', gl.getShaderInfoLog(shader));
   gl.deleteShader(shader);
   return null;
 };
@@ -187,6 +188,7 @@ const link = (gl: WebGL2RenderingContext): LinkedProgram | null => {
   gl.deleteShader(vertex);
   gl.deleteShader(fragment);
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    console.error('LightTunnel program link error:', gl.getProgramInfoLog(program));
     gl.deleteProgram(program);
     return null;
   }
@@ -333,7 +335,10 @@ export const LightTunnel: React.FC<LightTunnelProps> = ({
       depth: false,
       stencil: false
     });
-    if (!container || !canvas || !gl) return undefined;
+    if (!container || !canvas || !gl) {
+      if (!gl) console.error('LightTunnel: WebGL2 is not supported or disabled in this browser.');
+      return undefined;
+    }
 
     const program = link(gl);
     if (!program) return undefined;
@@ -552,7 +557,6 @@ export const LightTunnel: React.FC<LightTunnelProps> = ({
       gl.deleteProgram(program.program);
       gl.deleteBuffer(buffer);
       gl.deleteVertexArray(vao);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
   }, []);
 
@@ -563,11 +567,11 @@ export const LightTunnel: React.FC<LightTunnelProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`light-tunnel-container${className ? ` ${className}` : ''}`}
+      className={`light-tunnel-container relative h-full w-full overflow-hidden${className ? ` ${className}` : ''}`}
       style={style}
       {...rest}
     >
-      <canvas ref={canvasRef} className="light-tunnel-canvas" aria-hidden="true" />
+      <canvas ref={canvasRef} className="light-tunnel-canvas absolute inset-0 block h-full w-full" aria-hidden="true" />
     </div>
   );
 };
