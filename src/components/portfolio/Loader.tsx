@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence, useMotionValue, animate } from "framer-motion";
 import { profile } from "@/data/portfolio";
 
 interface LoaderProps {
@@ -7,86 +7,125 @@ interface LoaderProps {
 }
 
 export function Loader({ onComplete }: LoaderProps) {
-  const [progress, setProgress] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
+  const [status, setStatus] = useState<"Loading" | "Ready">("Loading");
+
+  const countRef = useRef<HTMLSpanElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
+
+  const progress = useMotionValue(0);
 
   useEffect(() => {
-    // Smooth progress counter from 0 to 100% over ~1.3s
-    const duration = 1300;
-    const startTime = performance.now();
+    let holdTimer: ReturnType<typeof setTimeout>;
+    let lastValue = -1;
 
-    const updateProgress = (now: number) => {
-      const elapsed = now - startTime;
-      const rawProgress = Math.min(elapsed / duration, 1);
-
-      // Smooth ease-out curve
-      const eased = Math.floor((1 - Math.pow(1 - rawProgress, 2.5)) * 100);
-      const current = Math.min(100, Math.max(0, eased));
-      setProgress(current);
-
-      if (rawProgress < 1) {
-        requestAnimationFrame(updateProgress);
-      } else {
-        setProgress(100);
-        setTimeout(() => {
+    // Single synchronized clock driving both digits and progress bar at native 60/120Hz
+    const controls = animate(progress, 100, {
+      duration: 1.4,
+      ease: [0.16, 1, 0.3, 1], // Ultra-silky expo/quintic deceleration
+      onUpdate: (latest) => {
+        const rounded = Math.round(latest);
+        if (rounded !== lastValue && countRef.current) {
+          countRef.current.textContent = String(rounded).padStart(2, "0");
+          lastValue = rounded;
+        }
+        if (barRef.current) {
+          barRef.current.style.transform = `scaleX(${latest / 100})`;
+        }
+      },
+      onComplete: () => {
+        setStatus("Ready");
+        holdTimer = setTimeout(() => {
           setIsExiting(true);
-          setTimeout(() => {
-            onComplete();
-          }, 500);
-        }, 200);
-      }
-    };
+        }, 180);
+      },
+    });
 
-    const animId = requestAnimationFrame(updateProgress);
-    return () => cancelAnimationFrame(animId);
-  }, [onComplete]);
+    return () => {
+      controls.stop();
+      clearTimeout(holdTimer);
+    };
+  }, [progress]);
 
   return (
-    <AnimatePresence>
+    <AnimatePresence onExitComplete={() => onCompleteRef.current()}>
       {!isExiting && (
         <motion.div
-          key="simple-loader"
+          key="seamless-dark-loader"
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } }}
-          className="fixed inset-0 z-[999] flex flex-col justify-between bg-ink px-6 py-6 text-ink-foreground select-none md:px-12 md:py-8"
+          exit={{
+            opacity: 0,
+            transition: {
+              duration: 0.65,
+              delay: 0.15, // Let the counter fade out first, then melt the black veil
+              ease: [0.22, 1, 0.36, 1],
+            },
+          }}
+          className="fixed inset-0 z-[999] flex flex-col justify-between bg-ink px-6 py-6 text-ink-foreground select-none pointer-events-none md:px-12 md:py-8"
         >
           {/* Minimal top bar */}
-          <div className="flex items-center justify-between text-xs text-ink-muted">
-            <span className="font-display tracking-[0.16em] uppercase text-ink-foreground font-semibold">
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6, transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="flex items-center justify-between text-xs text-ink-muted"
+          >
+            <span className="font-display font-semibold uppercase tracking-[0.16em] text-ink-foreground">
               {profile.wordmark}
             </span>
             <span className="label-caps text-[0.625rem]">MERN Stack Developer</span>
-          </div>
+          </motion.div>
 
-          {/* Simple, centered minimal counter */}
-          <div className="mx-auto flex flex-col items-center justify-center text-center">
+          {/* Centered minimal counter */}
+          <motion.div
+            exit={{
+              opacity: 0,
+              scale: 0.96,
+              filter: "blur(6px)",
+              transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
+            }}
+            className="mx-auto flex flex-col items-center justify-center text-center will-change-transform"
+          >
             <div className="flex items-baseline gap-1">
-              <span className="font-display text-7xl sm:text-8xl md:text-9xl font-light tracking-tighter tabular-nums text-ink-foreground">
-                {String(progress).padStart(2, "0")}
+              <span
+                ref={countRef}
+                className="font-display text-7xl font-light tracking-tighter tabular-nums text-ink-foreground sm:text-8xl md:text-9xl"
+              >
+                00
               </span>
-              <span className="serif-em text-3xl sm:text-4xl text-ink-muted font-normal">
+              <span className="serif-em text-3xl font-normal text-ink-muted sm:text-4xl">
                 %
               </span>
             </div>
 
-            {/* Minimal ultra-thin progress line */}
-            <div className="mt-6 h-[1.5px] w-36 sm:w-48 overflow-hidden rounded-full bg-ink-border">
+            {/* Frame-locked GPU progress line */}
+            <div className="mt-6 h-[1.5px] w-36 overflow-hidden rounded-full bg-ink-border sm:w-48">
               <div
-                className="h-full bg-ink-foreground transition-all duration-75 ease-out"
-                style={{ width: `${progress}%` }}
+                ref={barRef}
+                style={{ transform: "scaleX(0)" }}
+                className="h-full w-full origin-left bg-ink-foreground will-change-transform"
               />
             </div>
 
-            <p className="mt-4 label-caps text-[0.55rem] text-ink-muted tracking-[0.25em]">
-              {progress < 100 ? "Loading" : "Ready"}
+            <p className="mt-4 label-caps text-[0.55rem] tracking-[0.25em] text-ink-muted transition-opacity duration-300">
+              {status}
             </p>
-          </div>
+          </motion.div>
 
           {/* Minimal bottom bar */}
-          <div className="flex items-center justify-between text-[0.625rem] text-ink-muted label-caps">
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 6, transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="flex items-center justify-between label-caps text-[0.625rem] text-ink-muted"
+          >
             <span>Portfolio 2026</span>
             <span>Kannur, Kerala</span>
-          </div>
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
