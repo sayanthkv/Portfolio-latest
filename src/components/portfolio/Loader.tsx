@@ -63,7 +63,9 @@ export function Loader({ onComplete }: LoaderProps) {
               ease: [0.22, 1, 0.36, 1],
             },
           }}
-          className="fixed inset-0 z-[999] flex flex-col justify-between bg-ink px-6 py-6 text-ink-foreground select-none pointer-events-none md:px-12 md:py-8"
+          className={`fixed inset-0 z-[999] flex flex-col justify-between bg-ink px-6 py-6 text-ink-foreground select-none md:px-12 md:py-8 ${
+            isExiting ? "pointer-events-none" : "pointer-events-auto"
+          }`}
         >
           {/* Minimal top bar */}
           <motion.div
