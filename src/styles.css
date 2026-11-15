@@ -175,3 +175,16 @@
     animation: none;
   }
 }
+
+
+@layer base {
+  /* Hide browser scrollbar while keeping smooth wheel/touch scrolling */
+  html {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE & Edge */
+  }
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge, Brave */
+  }
+}

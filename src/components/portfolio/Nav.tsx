@@ -2,10 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Mail, Menu, X } from "lucide-react";
+import { Mail, Menu, RotateCcw, Sparkles, X } from "lucide-react";
 import { navLinks, profile } from "@/data/portfolio";
 
-export function Nav() {
+interface NavProps {
+  playMode?: boolean;
+  onTogglePlayMode?: () => void;
+}
+
+export function Nav({ playMode = false, onTogglePlayMode }: NavProps) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -19,11 +24,15 @@ export function Nav() {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
+    if (!playMode) {
+      document.body.style.overflow = open ? "hidden" : "";
+    }
     return () => {
-      document.body.style.overflow = "";
+      if (!playMode) {
+        document.body.style.overflow = "";
+      }
     };
-  }, [open]);
+  }, [open, playMode]);
 
   return (
     <>
@@ -36,7 +45,7 @@ export function Nav() {
         <nav
           aria-label="Primary"
           className={`
-            pointer-events-auto relative flex w-full max-w-3xl items-center justify-between gap-6
+            pointer-events-auto relative flex w-full max-w-3xl items-center justify-between gap-4
             rounded-full border py-2 pl-5 pr-2 text-ink-foreground transition-all duration-500
             ${
               scrolled
@@ -47,16 +56,18 @@ export function Nav() {
         >
           <a
             href="#top"
+            onClick={() => playMode && onTogglePlayMode?.()}
             className="font-display text-sm font-semibold tracking-[0.12em] transition-opacity hover:opacity-85"
           >
             {profile.wordmark}
           </a>
 
-          <ul className="hidden items-center gap-7 md:flex">
+          <ul className="hidden items-center gap-6 md:flex">
             {navLinks.map((l) => (
               <li key={l.href}>
                 <a
                   href={l.href}
+                  onClick={() => playMode && onTogglePlayMode?.()}
                   className="group relative label-caps text-[0.625rem] text-ink-muted transition-colors duration-300 hover:text-ink-foreground"
                 >
                   {l.label}
@@ -66,7 +77,36 @@ export function Nav() {
             ))}
           </ul>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
+            {onTogglePlayMode && (
+              <button
+                type="button"
+                onClick={onTogglePlayMode}
+                aria-pressed={playMode}
+                title={playMode ? "Restore layout" : "Break gravity & drag elements"}
+                className={`
+                  label-caps inline-flex h-9 items-center gap-1.5 rounded-full border px-3.5 text-[0.6rem] transition-all duration-300
+                  ${
+                    playMode
+                      ? "border-emerald-400/60 bg-emerald-400 text-ink shadow-[0_0_20px_rgba(52,211,153,0.45)]"
+                      : "border-white/20 bg-white/5 text-ink-foreground hover:border-white/40 hover:bg-white/10"
+                  }
+                `}
+              >
+                {playMode ? (
+                  <>
+                    <RotateCcw className="size-3" strokeWidth={2} />
+                    <span>Reset</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="size-3 text-emerald-400" strokeWidth={1.8} />
+                    <span>Play Mode</span>
+                  </>
+                )}
+              </button>
+            )}
+
             <a
               href={`mailto:${profile.email}`}
               aria-label="Email Sayanth"
@@ -74,6 +114,7 @@ export function Nav() {
             >
               <Mail className="size-4" strokeWidth={1.6} />
             </a>
+
             <button
               type="button"
               aria-label="Open menu"
